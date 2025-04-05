@@ -29,7 +29,18 @@ export const getOpportunities = async (filters: {
     const query = new URLSearchParams(cleanedFilters).toString();
     const url = `${API_BASE_URL}?${query}`;
     const response = await axios.get(url);
-    return response.data;
+
+    const today = new Date();
+
+    // Normalize: to compare the date, not time
+    today.setHours(0, 0, 0, 0);
+
+    const openOpportunities = response.data.filter((opportunity: Opportunity) => {
+      const closeDate = new Date(opportunity.close_date);
+      closeDate.setHours(0, 0, 0, 0);
+      return closeDate >= today;
+    })
+    return openOpportunities;
   } catch (error: any) {
     console.error("Error fetching opportunities...", error);
     throw error.response?.data.message || "Error fetching opportunities";

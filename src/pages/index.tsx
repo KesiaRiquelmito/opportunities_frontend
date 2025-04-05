@@ -38,7 +38,8 @@ export default function IndexPage() {
     { key: "code", label: "Código" },
     { key: "title", label: "Nombre" },
     { key: "type", label: "Tipo" },
-    { key: "publish_date", label: "Fecha de publicación" }
+    { key: "publish_date", label: "Fecha de publicación" },
+    { key: "close_date", label: "Fecha cierre" }
   ];
 
 
@@ -51,7 +52,7 @@ export default function IndexPage() {
             label="Tipo"
             value={filters.type}
             orientation="horizontal"
-            onValueChange={(values) => setFilters({...filters, type: values})}
+            onValueChange={(values) => setFilters({ ...filters, type: values })}
           >
             <Checkbox value="tender">Licitación</Checkbox>
             <Checkbox value="agile">Compra ágil</Checkbox>
@@ -75,7 +76,7 @@ export default function IndexPage() {
                       item[columnKey] === "tender" ? "Licitación" :
                         item[columnKey] === "agile" ? "Compra ágil" :
                           item[columnKey]
-                    ) : columnKey === "publish_date" ? (
+                    ) : columnKey === "publish_date" || columnKey === "close_date" ? (
                       new Date(item[columnKey]).toLocaleDateString("es-ES", {
                         year: "numeric",
                         month: "2-digit",
