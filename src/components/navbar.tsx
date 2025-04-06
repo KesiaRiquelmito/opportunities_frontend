@@ -1,4 +1,4 @@
-import { Link } from "@heroui/link";
+import { Link } from "react-router-dom";
 import {
   Navbar as HeroUINavbar,
   NavbarBrand,
@@ -18,7 +18,7 @@ export const Navbar = () => {
           <Link
             className="flex justify-start items-center gap-1"
             color="foreground"
-            href="/"
+            to="/"
           >
             <Logo />
             <p className="font-bold text-inherit">MichitaLab</p>
@@ -30,7 +30,7 @@ export const Navbar = () => {
               <Link
                 className="data-[active=true]:text-primary hover:text-primary-500"
                 color="foreground"
-                href={item.href}
+                to={item.href}
               >
                 {item.label}
               </Link>
