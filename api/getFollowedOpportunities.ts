@@ -1,0 +1,48 @@
+import axios from "axios";
+import { Opportunity } from "../interfaces/IOpportunity.ts";
+
+const API_BASE_URL = "http://localhost:3000/opportunities/followed";
+export const getFollowedOpportunities = async (filters: {
+  type?: string[] | string;
+  publish_date_start?: string;
+  publish_date_end?: string;
+} = {}): Promise<Opportunity[]> => {
+  try {
+    const cleanedFilters: Record<string, string> = {};
+
+    if (Array.isArray(filters.type)) {
+      if (filters.type.length === 1) {
+        cleanedFilters.type = filters.type[0];
+      }
+    } else if (typeof filters.type === "string" && filters.type.trim() !== "") {
+      cleanedFilters.type = filters.type; // single dropdown use-case
+    }
+
+    if (filters.publish_date_start && filters.publish_date_start.trim() !== "") {
+      cleanedFilters.publish_date_start = filters.publish_date_start;
+    }
+
+    if (filters.publish_date_end && filters.publish_date_end.trim() !== "") {
+      cleanedFilters.publish_date_end = filters.publish_date_end;
+    }
+
+    const query = new URLSearchParams(cleanedFilters).toString();
+    const url = `${API_BASE_URL}?${query}`;
+    const response = await axios.get(url);
+
+    const today = new Date();
+
+    // Normalize: to compare the date, not time
+    today.setHours(0, 0, 0, 0);
+
+    const openOpportunities = response.data.filter((opportunity: Opportunity) => {
+      const closeDate = new Date(opportunity.close_date);
+      closeDate.setHours(0, 0, 0, 0);
+      return closeDate >= today;
+    });
+    return openOpportunities;
+  } catch (error: any) {
+    console.error("Error fetching followed opportunities...", error);
+    throw error.response?.data.message || "Error fetching followed opportunities";
+  }
+};
