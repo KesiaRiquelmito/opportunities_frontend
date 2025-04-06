@@ -39,7 +39,7 @@ export const getOpportunities = async (filters: {
       const closeDate = new Date(opportunity.close_date);
       closeDate.setHours(0, 0, 0, 0);
       return closeDate >= today;
-    })
+    });
     return openOpportunities;
   } catch (error: any) {
     console.error("Error fetching opportunities...", error);
