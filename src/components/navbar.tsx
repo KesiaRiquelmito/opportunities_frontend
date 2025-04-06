@@ -8,6 +8,7 @@ import {
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
+import { siteConfig } from "@/config/site.ts";
 
 export const Navbar = () => {
   return (
@@ -23,6 +24,19 @@ export const Navbar = () => {
             <p className="font-bold text-inherit">MichitaLab</p>
           </Link>
         </NavbarBrand>
+        <ul className="flex gap-6 ml-4">
+          {siteConfig.navItems.map((item)=> (
+            <NavbarItem key={item.href}>
+              <Link
+                className="data-[active=true]:text-primary hover:text-primary-500"
+                color="foreground"
+                href={item.href}
+              >
+                {item.label}
+              </Link>
+            </NavbarItem>
+          ))}
+        </ul>
       </NavbarContent>
 
       <NavbarContent
