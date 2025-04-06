@@ -8,15 +8,14 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Button } from "@heroui/button";
 import { DateRangePicker } from "@heroui/date-picker";
 import { DateFormatter } from "@internationalized/date";
-import { Filters } from "../../interfaces/IFilters.ts";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { setDateRange, setType } from "@/store/filterSlice.ts";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [filters, setFilters] = useState<Filters>({
-    type: [],
-    publish_date_start: "",
-    publish_date_end: ""
-  });
+  const filters = useSelector((state: RootState) => state.filters);
+  const dispatch = useDispatch<AppDispatch>();
 
   const loadOpportunities = async () => {
     const data = await getOpportunities(filters);
@@ -34,30 +33,10 @@ export default function Opportunities() {
     day: "2-digit"
   });
 
-  const handleDateRange = (range: any) => {
-    if (range) {
-      const startDate = range.start ? formatter.format(range.start.toDate()) : "";
-      const endDate = range.end ? formatter.format(range.end.toDate()) : "";
-      setFilters({
-        ...filters,
-        publish_date_start: startDate,
-        publish_date_end: endDate
-      });
-    } else {
-      setFilters({
-        ...filters,
-        publish_date_start: "",
-        publish_date_end: ""
-      });
-    }
-  };
-
   const handleToggleFollow = async (id: number) => {
     await toggleFollow(id);
     await loadOpportunities();
   };
-
-  console.log("Opportunities", opportunities);
 
   const columns = [
     { key: "code", label: "Código" },
@@ -80,7 +59,7 @@ export default function Opportunities() {
               label="Tipo"
               value={filters.type}
               orientation="horizontal"
-              onValueChange={(values) => setFilters({ ...filters, type: values })}
+              onValueChange={(values) => dispatch(setType(values))}
             >
               <Checkbox value="tender">Licitación</Checkbox>
               <Checkbox value="agile">Compra ágil</Checkbox>
@@ -88,7 +67,11 @@ export default function Opportunities() {
             <DateRangePicker
               aria-label="Rango de fecha de publicación de las oportunidades"
               label="Fecha de publicación"
-              onChange={handleDateRange}
+              onChange={(range:any) => {
+                const start = range?.start? formatter.format(range.start.toDate()) : "";
+                const end = range?.end? formatter.format(range.end.toDate()): "";
+                dispatch(setDateRange({ start, end }));
+              }}
               className="max-w-xs"
               firstDayOfWeek="mon"
             ></DateRangePicker>
