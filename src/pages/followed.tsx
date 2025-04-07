@@ -12,10 +12,11 @@ import { Button } from "@heroui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { setDateRange, setType } from "@/store/filterSlice.ts";
+import { Divider } from "@heroui/divider";
 
 export default function FollowedPage() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const filters = useSelector((state: RootState)=> state.filters);
+  const filters = useSelector((state: RootState) => state.filters);
   const dispatch = useDispatch<AppDispatch>();
 
   const loadOpportunities = async () => {
@@ -50,9 +51,10 @@ export default function FollowedPage() {
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 ">
-        <h1 className={title()}>Oportunidades en seguimiento</h1>
-        <div className="inline-block gap-4">
-          <span className="text-base">Filtros:</span>
+        <div className="justify-center flex-col flex">
+          <span className="text-4xl pb-10">Oportunidades en seguimiento</span>
+          <span className="text-lg">Filtros:</span>
+          <Divider />
           <div className="py-2 flex flex-row justify-between">
             <CheckboxGroup
               label="Tipo"
@@ -63,20 +65,28 @@ export default function FollowedPage() {
               <Checkbox value="tender">Licitación </Checkbox>
               <Checkbox value="agile">Compra ágil</Checkbox>
             </CheckboxGroup>
+            <Divider orientation="vertical" className="h-16" />
             <DateRangePicker
               aria-label="Rango de fecha de publicación de las oportunidades en seguimiento"
               label="Fecha de publicación"
-              onChange={(range:any) => {
-                const start = range?.start? formatter.format(range.start.toDate()): "";
-                const end = range?.end? formatter.format(range.end.toDate()): "";
-                dispatch((setDateRange({start, end})));
+              onChange={(range: any) => {
+                const start = range?.start ? formatter.format(range.start.toDate()) : "";
+                const end = range?.end ? formatter.format(range.end.toDate()) : "";
+                dispatch((setDateRange({ start, end })));
               }}
               className="max-w-xs"
               firstDayOfWeek="mon"
             ></DateRangePicker>
           </div>
           <Table
-            aria-label="Opportunities-table">
+            aria-label="Opportunities-table"
+            fullWidth={true}
+            classNames={{
+              base: "min-w-[800px] w-full",
+              table: "min-w-[800px] w-full",
+              emptyWrapper: "min-w-[400px] w-full",
+            }}
+          >
             <TableHeader>
               {columns.map((column) => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -104,7 +114,7 @@ export default function FollowedPage() {
                         })
                       ) : columnKey === "actions" ? (
                         <Button
-                          className="w-full"
+                          className="w-[120px]"
                           size="sm"
                           variant={item.is_followed ? "ghost" : "solid"}
                           onPress={() => handleToggleFollow(item.id)}

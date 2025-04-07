@@ -7,7 +7,7 @@ function App() {
   return (
     <Routes>
       <Route element={<Opportunities />} path="/" />
-      <Route element={<FollowedPage/>} path="/followed"/>
+      <Route element={<FollowedPage />} path="/followed"/>
     </Routes>
   );
 }

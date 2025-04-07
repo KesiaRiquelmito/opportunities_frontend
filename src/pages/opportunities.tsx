@@ -11,6 +11,7 @@ import { DateFormatter } from "@internationalized/date";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { setDateRange, setType } from "@/store/filterSlice.ts";
+import { Divider } from "@heroui/divider";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -51,9 +52,10 @@ export default function Opportunities() {
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4">
-        <div className="inline-block justify-center flex-col flex">
-          <span className="text-xl">Oportunidades</span>
-          <span className="text-base">Filtros:</span>
+        <div className="justify-center flex-col flex">
+          <span className="text-4xl pb-6">Oportunidades</span>
+          <span className="text-lg py-3">Filtros:</span>
+          <Divider />
           <div className="py-2 flex flex-row justify-between">
             <CheckboxGroup
               label="Tipo"
@@ -64,12 +66,13 @@ export default function Opportunities() {
               <Checkbox value="tender">Licitación</Checkbox>
               <Checkbox value="agile">Compra ágil</Checkbox>
             </CheckboxGroup>
+            <Divider orientation="vertical" className="h-16" />
             <DateRangePicker
               aria-label="Rango de fecha de publicación de las oportunidades"
               label="Fecha de publicación"
-              onChange={(range:any) => {
-                const start = range?.start? formatter.format(range.start.toDate()) : "";
-                const end = range?.end? formatter.format(range.end.toDate()): "";
+              onChange={(range: any) => {
+                const start = range?.start ? formatter.format(range.start.toDate()) : "";
+                const end = range?.end ? formatter.format(range.end.toDate()) : "";
                 dispatch(setDateRange({ start, end }));
               }}
               className="max-w-xs"
@@ -78,7 +81,13 @@ export default function Opportunities() {
           </div>
 
           <Table
-            aria-label="Opportunities-table">
+            aria-label="Opportunities-table"
+            classNames={{
+              base: "min-w-[800px] w-full",
+              table: "min-w-[800px] w-full",
+              emptyWrapper: "min-w-[400px] w-full",
+            }}
+          >
             <TableHeader>
               {columns.map((column) => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -104,7 +113,7 @@ export default function Opportunities() {
                       })
                     ) : columnKey === "actions" ? (
                         <Button
-                          className="w-full"
+                          className="w-[120px]"
                           size="sm"
                           variant={item.is_followed ? "ghost" : "solid"}
                           onPress={() => handleToggleFollow(item.id)}
