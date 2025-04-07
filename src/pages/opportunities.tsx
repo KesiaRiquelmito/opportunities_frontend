@@ -10,8 +10,9 @@ import { DateRangePicker } from "@heroui/date-picker";
 import { DateFormatter } from "@internationalized/date";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { setDateRange, setType } from "@/store/filterSlice.ts";
+import { resetFilters, setDateRange, setType } from "@/store/filterSlice.ts";
 import { Divider } from "@heroui/divider";
+import { parseDate } from "@internationalized/date";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -48,6 +49,12 @@ export default function Opportunities() {
     { key: "actions", label: "Estado" }
   ];
 
+  const dateRangeValue = filters.publish_date_start && filters.publish_date_end
+    ? {
+      start: parseDate(filters.publish_date_start),
+      end: parseDate(filters.publish_date_end)
+    }
+    : null;
 
   return (
     <DefaultLayout>
@@ -56,7 +63,7 @@ export default function Opportunities() {
           <span className="text-4xl pb-6">Oportunidades</span>
           <span className="text-lg py-3">Filtros:</span>
           <Divider />
-          <div className="py-2 flex flex-row justify-between">
+          <div className="py-2 flex flex-row justify-between items-center">
             <CheckboxGroup
               label="Tipo"
               value={filters.type}
@@ -70,6 +77,7 @@ export default function Opportunities() {
             <DateRangePicker
               aria-label="Rango de fecha de publicación de las oportunidades"
               label="Fecha de publicación"
+              value={dateRangeValue}
               onChange={(range: any) => {
                 const start = range?.start ? formatter.format(range.start.toDate()) : "";
                 const end = range?.end ? formatter.format(range.end.toDate()) : "";
@@ -78,6 +86,13 @@ export default function Opportunities() {
               className="max-w-xs"
               firstDayOfWeek="mon"
             ></DateRangePicker>
+            <Divider orientation="vertical" className="h-16" />
+            <Button
+              color="danger"
+              size="md"
+              onPress={() => dispatch(resetFilters())}
+            >Limpiar filtros</Button>
+
           </div>
 
           <Table
@@ -85,7 +100,7 @@ export default function Opportunities() {
             classNames={{
               base: "min-w-[800px] w-full",
               table: "min-w-[800px] w-full",
-              emptyWrapper: "min-w-[400px] w-full",
+              emptyWrapper: "min-w-[400px] w-full"
             }}
           >
             <TableHeader>

@@ -1,17 +1,16 @@
-import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { useEffect, useState } from "react";
 import { Opportunity } from "../../interfaces/IOpportunity.ts";
 import { getFollowedOpportunities } from "../../api/getFollowedOpportunities.ts";
 import { toggleFollow } from "../../api/toggleFollow.ts";
-import { DateFormatter } from "@internationalized/date";
+import { DateFormatter, parseDate } from "@internationalized/date";
 import { DateRangePicker } from "@heroui/date-picker";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
 import { Button } from "@heroui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { setDateRange, setType } from "@/store/filterSlice.ts";
+import { resetFilters, setDateRange, setType } from "@/store/filterSlice.ts";
 import { Divider } from "@heroui/divider";
 
 export default function FollowedPage() {
@@ -47,28 +46,35 @@ export default function FollowedPage() {
     { key: "close_date", label: "Fecha cierre" },
     { key: "actions", label: "Estado" }
   ];
+  const dateRangeValue = filters.publish_date_start && filters.publish_date_end
+    ? {
+      start: parseDate(filters.publish_date_start),
+      end: parseDate(filters.publish_date_end)
+    }
+    : null;
+
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 ">
         <div className="justify-center flex-col flex">
-          <span className="text-4xl pb-10">Oportunidades en seguimiento</span>
-          <span className="text-lg">Filtros:</span>
+          <span className="text-4xl pb-6">Oportunidades en seguimiento</span>
+          <span className="text-lg py-3">Filtros:</span>
           <Divider />
-          <div className="py-2 flex flex-row justify-between">
-            <CheckboxGroup
-              label="Tipo"
-              value={filters.type}
-              orientation="horizontal"
-              onValueChange={(values) => dispatch(setType(values))}
-            >
-              <Checkbox value="tender">Licitación </Checkbox>
-              <Checkbox value="agile">Compra ágil</Checkbox>
-            </CheckboxGroup>
+          <div className="py-2 flex flex-row justify-between items-center"><CheckboxGroup
+            label="Tipo"
+            value={filters.type}
+            orientation="horizontal"
+            onValueChange={(values) => dispatch(setType(values))}
+          >
+            <Checkbox value="tender">Licitación </Checkbox>
+            <Checkbox value="agile">Compra ágil</Checkbox>
+          </CheckboxGroup>
             <Divider orientation="vertical" className="h-16" />
             <DateRangePicker
               aria-label="Rango de fecha de publicación de las oportunidades en seguimiento"
               label="Fecha de publicación"
+              value={dateRangeValue}
               onChange={(range: any) => {
                 const start = range?.start ? formatter.format(range.start.toDate()) : "";
                 const end = range?.end ? formatter.format(range.end.toDate()) : "";
@@ -77,6 +83,12 @@ export default function FollowedPage() {
               className="max-w-xs"
               firstDayOfWeek="mon"
             ></DateRangePicker>
+            <Divider orientation="vertical" className="h-16" />
+            <Button
+              color="danger"
+              size="md"
+              onPress={() => dispatch(resetFilters())}
+            >Limpiar filtros</Button>
           </div>
           <Table
             aria-label="Opportunities-table"
@@ -84,7 +96,7 @@ export default function FollowedPage() {
             classNames={{
               base: "min-w-[800px] w-full",
               table: "min-w-[800px] w-full",
-              emptyWrapper: "min-w-[400px] w-full",
+              emptyWrapper: "min-w-[400px] w-full"
             }}
           >
             <TableHeader>
