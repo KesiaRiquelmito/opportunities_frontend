@@ -21,9 +21,9 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `yarn`:
 $ yarn install
 ```
 
-### Verify enviroment
+### Enviroment
 
-Use the .env.example to build your own .env
+For the sake of simplicity all the endpoints on the frontend were hardcoded
 
 ### Run the development server
 
